@@ -1,20 +1,20 @@
 import { DefineTypes } from 'utils/DefineTypes'
 import { put, select, takeEvery } from 'redux-saga/effects';
 
-export const columnTypes = DefineTypes('COLUMS/GET');
+export const columnTypes = DefineTypes('LIST_ITEMS/GET');
 
 export const initialState = {
-  columnsCount: 2
+  items: new Map()
 };
 
 export const actions = {
-  addColumn() {
+  moveItemToColumn() {
     return { type: columnTypes.REQUEST };
   }
 };
 
 export const selectors = {
-  columnsCount: (state) => state.columns.columnsCount
+  items: (state) => state.listItems.items
 };
 
 export const reducer = (state = initialState, { type, ...payload }) => {
@@ -28,16 +28,32 @@ export const reducer = (state = initialState, { type, ...payload }) => {
   }
 };
 
-export function* addColumnSaga() {
+export function* addItemSaga({ columnId, item }) {
   try {
-    const currentColumnsCount = yield select(selectors.columnsCount)
-    const columnsCount = currentColumnsCount + 1
-    yield put({ type: columnTypes.SUCCESS, columnsCount });
+    const currentItems = yield select(selectors.items)
+    const columnItems = currentItems.get(columnId)
+    const newItems = columnItems.set(columnId, columnItems.push(item))
+    yield put({ type: columnTypes.SUCCESS, items: newItems });
+  } catch (error) {
+    yield put({ type: columnTypes.FAILURE, error });
+  }
+}
+
+export function* removeItemSaga({ columnId, item }) {
+  try {
+    const currentItems = yield select(selectors.items)
+    const columnItems = currentItems.get(columnId)
+    const itemIndex = columnItems.indexOf(item)
+    const newItems = columnItems.splice(itemIndex, 1)
+    yield put({ type: columnTypes.SUCCESS, items: newItems });
   } catch (error) {
     yield put({ type: columnTypes.FAILURE, error });
   }
 }
 
 export function* rootSaga() {
-  yield takeEvery(columnTypes.REQUEST, addColumnSaga);
+  yield [
+    takeEvery(columnTypes.REQUEST, addItemSaga),
+    takeEvery(columnTypes.REMOVE, removeItemSaga)
+  ]
 }

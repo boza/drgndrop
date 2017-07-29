@@ -8,7 +8,7 @@ class Column extends React.Component {
       [1,2].map((item) => {
         return (
           <li>
-            { item }
+            <ListItem />
           </li>
         )
       })
