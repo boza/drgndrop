@@ -1,15 +1,19 @@
 import { DefineTypes } from 'utils/DefineTypes'
 import { put, select, takeEvery } from 'redux-saga/effects';
 
-export const columnTypes = DefineTypes('LIST_ITEMS/GET');
+export const columnTypes = { ...DefineTypes('LIST_ITEMS/GET'), REMOVE: 'LIST_ITEMS/GET/REMOVE' };
 
 export const initialState = {
   items: new Map()
 };
 
 export const actions = {
-  moveItemToColumn() {
+  moveItemToColumn(columnId) {
     return { type: columnTypes.REQUEST };
+  }
+
+  removeItemToColumn(columnId) {
+    return { type: columnTypes.REMOVE };
   }
 };
 
