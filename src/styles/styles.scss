@@ -35,6 +35,14 @@ li {
   list-style: none;
 }
 
+li.dragging {
+  opacity: 0.3;
+}
+
+ul.over {
+  border-style: dashed;
+}
+
 .column {
   float: left;
   width: 200px;

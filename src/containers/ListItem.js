@@ -6,7 +6,7 @@ import { columnTypes } from 'sagas/ColumnSaga';
 const itemSource = {
   beginDrag(props) {
     return {
-      id: props.index,
+      id: props.id,
       index: props.index,
     };
   },
@@ -24,11 +24,19 @@ function collect(connect, monitor) {
 
 class ListItem extends React.Component {
 
+  getClassName(isDragging) {
+    if (isDragging) {
+      return "dragging";
+    }
+    return null;
+  }
+
   render() {
-    const { connectDragSource } = this.props;
+    const { isDragging, connectDragSource } = this.props;
+    const { getClassName } = this;
 
     return connectDragSource(
-      <li>
+      <li className={ getClassName(isDragging) }>
         List Item
       </li>
     )
