@@ -30,6 +30,7 @@
   "author": "Jose Boza",
   "license": "MIT",
   "dependencies": {
+    "classnames": "2.2.5",
     "object-assign": "4.1.0",
     "react": "15.5.4",
     "react-dnd": "2.4.0",

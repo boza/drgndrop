@@ -1,4 +1,5 @@
 import React from 'react';
+import classnames from 'classnames';
 import ListItem from 'containers/ListItem';
 import { DropTarget } from 'react-dnd';
 import { columnTypes } from 'sagas/ColumnSaga';
@@ -31,19 +32,19 @@ class Column extends React.Component {
   }
 
   getClassName(isOver) {
-    if (isOver) {
-      return "over";
-    }
-    return null;
+    return classnames(
+      'column',
+      { 'over': isOver }
+    );
   }
 
   render() {
     const { rendeItems, getClassName } = this;
-    const { items, isOver, canDrop, connectDropTarget, id } = this.props;
+    const { items, isOverCurrent, canDrop, connectDropTarget, id } = this.props;
 
     return connectDropTarget (
-      <div className="column">
-        <ul className={ getClassName(isOver) }>
+      <div className={ getClassName(isOverCurrent) }>
+        <ul>
           { rendeItems(items, id) }
         </ul>
       </div>
