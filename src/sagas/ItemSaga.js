@@ -10,7 +10,7 @@ export const initialState = {
 export const actions = {
   moveItemToColumn(columnId) {
     return { type: columnTypes.REQUEST };
-  }
+  },
 
   removeItemToColumn(columnId) {
     return { type: columnTypes.REMOVE };

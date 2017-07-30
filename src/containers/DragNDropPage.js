@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Column from 'containers/Column'
 import { selectors, actions } from 'sagas/ColumnSaga';
-// import { selectors, actions } from 'sagas/ItemSaga';
+import { selectors as itemSelectors, actions as itemActions } from 'sagas/ItemSaga';
 
 const renderColumns = (columnsCount, items) => {
   let counter = 0;
@@ -12,16 +12,19 @@ const renderColumns = (columnsCount, items) => {
   while(counter < columnsCount) {
     counter++
     columns.push(
-      <Column items={items[counter]} />
+      <Column key={counter} items={items[counter]} />
     )
   }
   return columns;
 }
 
-export const DragNDropPage = ({ columnsCount }) => {
+export const DragNDropPage = ({ columnsCount, addColumn }) => {
   return (
-    <div className="index">
-      { renderColumns(columnsCount) }
+    <div>
+      <a onClick={addColumn}>+ Add more columns</a>
+      <div className="index">
+        { renderColumns(columnsCount, [1,2]) }
+      </div>
     </div>
   );
 };
@@ -40,7 +43,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(actions, dispatch)
+    ...bindActionCreators(actions, dispatch),
+    ...bindActionCreators(itemActions, dispatch)
   };
 }
 
