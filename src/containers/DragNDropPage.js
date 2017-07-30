@@ -20,7 +20,7 @@ const renderColumns = (columnsCount, items) => {
     const columnItems = items.get(counter) || DEFAULT_ITEMS
 
     columns.push(
-      <Column key={counter} items={columnItems} />
+      <Column id={counter} items={columnItems} />
     )
   }
   return columns;

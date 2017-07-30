@@ -1,12 +1,12 @@
 import React from 'react';
 import { DragSource } from 'react-dnd';
-import { listItemTypes } from 'sagas/ItemSaga';
+import { columnTypes } from 'sagas/ColumnSaga';
 
 
 const itemSource = {
   beginDrag(props) {
     return {
-      id: props.id,
+      id: props.index,
       index: props.index,
     };
   },
@@ -25,7 +25,7 @@ function collect(connect, monitor) {
 class ListItem extends React.Component {
 
   render() {
-    const { isDragging, connectDragSource } = this.props;
+    const { connectDragSource } = this.props;
 
     return connectDragSource(
       <li>
@@ -41,4 +41,4 @@ ListItem.defaultProps = {
   connectDragSource: React.PropTypes.func.isRequired
 };
 
-export default DragSource(listItemTypes.DRAG, itemSource, collect)(ListItem);
+export default DragSource(columnTypes.DRAG, itemSource, collect)(ListItem);

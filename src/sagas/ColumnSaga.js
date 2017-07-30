@@ -1,7 +1,7 @@
 import { DefineTypes } from 'utils/DefineTypes'
 import { put, select, takeEvery } from 'redux-saga/effects';
 
-export const columnTypes = DefineTypes('COLUMS/GET');
+export const columnTypes = { ...DefineTypes('COLUMS/GET'), DRAG: 'COLUMNS/GET/DRAG' };
 
 export const initialState = {
   columnsCount: 2
