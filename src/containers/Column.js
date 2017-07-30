@@ -5,11 +5,9 @@ class Column extends React.Component {
 
   rendeItems(items) {
     return (
-      [1,2].map((item) => {
+      items.map((item, index) => {
         return (
-          <li>
-            <ListItem />
-          </li>
+          <ListItem key={index} />
         )
       })
     );

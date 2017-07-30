@@ -6,31 +6,35 @@ import Column from 'containers/Column'
 import { selectors, actions } from 'sagas/ColumnSaga';
 import { selectors as itemSelectors, actions as itemActions } from 'sagas/ItemSaga';
 
+const DEFAULT_ITEMS = ["One", "TWO"];
+
 const renderColumns = (columnsCount, items) => {
   let counter = 0;
   const columns = []
   while(counter < columnsCount) {
     counter++
+    const columnItems = items.get(counter) || DEFAULT_ITEMS
+
     columns.push(
-      <Column key={counter} items={items[counter]} />
+      <Column key={counter} items={columnItems} />
     )
   }
   return columns;
 }
 
-export const DragNDropPage = ({ columnsCount, addColumn }) => {
+export const DragNDropPage = ({ items, columnsCount, addColumn }) => {
   return (
     <div>
       <a onClick={addColumn}>+ Add more columns</a>
       <div className="index">
-        { renderColumns(columnsCount, [1,2]) }
+        { renderColumns(columnsCount, items) }
       </div>
     </div>
   );
 };
 
 DragNDropPage.propTypes = {
-  actions: PropTypes.object.isRequired,
+  addColumn: PropTypes.func.isRequired,
   columnsCount: PropTypes.number.isRequired
 };
 
