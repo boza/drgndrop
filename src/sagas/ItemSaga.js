@@ -1,7 +1,7 @@
 import { DefineTypes } from 'utils/DefineTypes'
 import { put, select, takeEvery } from 'redux-saga/effects';
 
-export const columnTypes = { ...DefineTypes('LIST_ITEMS/GET'), REMOVE: 'LIST_ITEMS/GET/REMOVE' };
+export const listItemTypes = { ...DefineTypes('LIST_ITEMS/GET'), DRAG: 'LIST_ITEMS/GET/DRAG', REMOVE: 'LIST_ITEMS/GET/REMOVE' };
 
 export const initialState = {
   items: new Map()
@@ -9,11 +9,11 @@ export const initialState = {
 
 export const actions = {
   moveItemToColumn(columnId) {
-    return { type: columnTypes.REQUEST };
+    return { type: listItemTypes.REQUEST };
   },
 
   removeItemToColumn(columnId) {
-    return { type: columnTypes.REMOVE };
+    return { type: listItemTypes.REMOVE };
   }
 };
 
@@ -23,9 +23,9 @@ export const selectors = {
 
 export const reducer = (state = initialState, { type, ...payload }) => {
   switch (type) {
-    case columnTypes.REQUEST:
+    case listItemTypes.REQUEST:
       return { ...state };
-    case columnTypes.SUCCESS:
+    case listItemTypes.SUCCESS:
       return { ...state, ...payload }
     default:
       return state;
@@ -37,9 +37,9 @@ export function* addItemSaga({ columnId, item }) {
     const currentItems = yield select(selectors.items)
     const columnItems = currentItems.get(columnId)
     const newItems = columnItems.set(columnId, columnItems.push(item))
-    yield put({ type: columnTypes.SUCCESS, items: newItems });
+    yield put({ type: listItemTypes.SUCCESS, items: newItems });
   } catch (error) {
-    yield put({ type: columnTypes.FAILURE, error });
+    yield put({ type: listItemTypes.FAILURE, error });
   }
 }
 
@@ -49,15 +49,15 @@ export function* removeItemSaga({ columnId, item }) {
     const columnItems = currentItems.get(columnId)
     const itemIndex = columnItems.indexOf(item)
     const newItems = columnItems.splice(itemIndex, 1)
-    yield put({ type: columnTypes.SUCCESS, items: newItems });
+    yield put({ type: listItemTypes.SUCCESS, items: newItems });
   } catch (error) {
-    yield put({ type: columnTypes.FAILURE, error });
+    yield put({ type: listItemTypes.FAILURE, error });
   }
 }
 
 export function* rootSaga() {
   yield [
-    takeEvery(columnTypes.REQUEST, addItemSaga),
-    takeEvery(columnTypes.REMOVE, removeItemSaga)
+    takeEvery(listItemTypes.REQUEST, addItemSaga),
+    takeEvery(listItemTypes.REMOVE, removeItemSaga)
   ]
 }
