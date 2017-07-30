@@ -3,6 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Column from 'containers/Column'
+
+import {DragDropContext} from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+
 import { selectors, actions } from 'sagas/ColumnSaga';
 import { selectors as itemSelectors, actions as itemActions } from 'sagas/ItemSaga';
 
@@ -52,7 +56,7 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(
+export default DragDropContext(HTML5Backend)(connect(
   mapStateToProps,
   mapDispatchToProps
-)(DragNDropPage);
+)(DragNDropPage));
