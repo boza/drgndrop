@@ -8,30 +8,25 @@ import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 import { selectors, actions } from 'sagas/ColumnSaga';
-import { selectors as itemSelectors, actions as itemActions } from 'sagas/ItemSaga';
 
-const DEFAULT_ITEMS = ["One", "TWO"];
-
-const renderColumns = (columnsCount, items) => {
+const renderColumns = (columnsCount) => {
   let counter = 0;
   const columns = []
   while(counter < columnsCount) {
     counter++
-    const columnItems = items.get(counter) || DEFAULT_ITEMS
-
     columns.push(
-      <Column id={counter} items={columnItems} />
+      <Column id={counter} />
     )
   }
   return columns;
 }
 
-export const DragNDropPage = ({ items, columnsCount, addColumn }) => {
+export const DragNDropPage = ({ columnsCount, addColumn }) => {
   return (
     <div>
       <a onClick={addColumn}>+ Add more columns</a>
       <div className="index">
-        { renderColumns(columnsCount, items) }
+        { renderColumns(columnsCount) }
       </div>
     </div>
   );
@@ -45,14 +40,12 @@ DragNDropPage.propTypes = {
 function mapStateToProps(state) {
   return {
     columnsCount: selectors.columnsCount(state),
-    items: itemSelectors.items(state)
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     ...bindActionCreators(actions, dispatch),
-    ...bindActionCreators(itemActions, dispatch)
   };
 }
 

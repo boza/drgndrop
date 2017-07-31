@@ -8,8 +8,8 @@ export const initialState = {
 };
 
 export const actions = {
-  moveItemToColumn(columnId) {
-    return { type: listItemTypes.REQUEST };
+  moveItemToColumn(item, columnId) {
+    return { type: listItemTypes.REQUEST, item, columnId };
   },
 
   removeItemToColumn(columnId) {
@@ -18,14 +18,14 @@ export const actions = {
 };
 
 export const selectors = {
-  items: (state) => state.listItems.items
+  items: (state) => state.listItems.items,
 };
 
 export const reducer = (state = initialState, { type, ...payload }) => {
   switch (type) {
     case listItemTypes.REQUEST:
-      return { ...state };
     case listItemTypes.SUCCESS:
+    case listItemTypes.FAILURE:
       return { ...state, ...payload }
     default:
       return state;
@@ -34,11 +34,16 @@ export const reducer = (state = initialState, { type, ...payload }) => {
 
 export function* addItemSaga({ columnId, item }) {
   try {
-    const currentItems = yield select(selectors.items)
-    const columnItems = currentItems.get(columnId)
-    const newItems = columnItems.set(columnId, columnItems.push(item))
+    const allItems = yield select(selectors.items) || new Map()
+    const columnItems = allItems.get(columnId) || []
+
+    columnItems.push(item)
+
+    const newItems = allItems.set(columnId, columnItems)
+
     yield put({ type: listItemTypes.SUCCESS, items: newItems });
   } catch (error) {
+
     yield put({ type: listItemTypes.FAILURE, error });
   }
 }
