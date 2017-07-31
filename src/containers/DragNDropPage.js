@@ -15,7 +15,7 @@ const renderColumns = (columnsCount) => {
   while(counter < columnsCount) {
     counter++
     columns.push(
-      <Column id={counter} />
+      <Column key={`column-${counter}`} id={counter} />
     )
   }
   return columns;

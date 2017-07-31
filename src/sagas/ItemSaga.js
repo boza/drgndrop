@@ -1,24 +1,43 @@
 import { DefineTypes } from 'utils/DefineTypes'
-import { put, select, takeEvery } from 'redux-saga/effects';
-
+import { put, select, takeEvery, takeLatest } from 'redux-saga/effects';
+import { DEFAULT_ITEMS } from 'utils/constants';
 export const listItemTypes = { ...DefineTypes('LIST_ITEMS/GET'), DRAG: 'LIST_ITEMS/GET/DRAG', REMOVE: 'LIST_ITEMS/GET/REMOVE' };
 
 export const initialState = {
   items: new Map()
 };
 
+export const buildDefaultItems = (columnId) => {
+  const itemsForCol = [];
+
+  DEFAULT_ITEMS.forEach((item, index) => {
+    item.id = `${columnId}-${index}`
+    itemsForCol.push(item)
+  });
+
+  return itemsForCol;
+}
+
 export const actions = {
+
+  addDefaultItems(columnId) {
+    return { type: listItemTypes.REQUEST, columnId };
+  },
+
   moveItemToColumn(item, columnId) {
     return { type: listItemTypes.REQUEST, item, columnId };
   },
 
-  removeItemToColumn(columnId) {
-    return { type: listItemTypes.REMOVE };
+  removeItemToColumn(item, columnId) {
+    return { type: listItemTypes.REMOVE, item, columnId };
   }
 };
 
 export const selectors = {
-  items: (state) => state.listItems.items,
+  findColumnItems: (state) => (columnId) => {
+    return state.listItems.items.get(columnId) || buildDefaultItems(columnId)
+  },
+  items: (state) => state.listItems.items
 };
 
 export const reducer = (state = initialState, { type, ...payload }) => {
@@ -34,26 +53,32 @@ export const reducer = (state = initialState, { type, ...payload }) => {
 
 export function* addItemSaga({ columnId, item }) {
   try {
-    const allItems = yield select(selectors.items) || new Map()
-    const columnItems = allItems.get(columnId) || []
+    const allItems = yield select(selectors.items);
+    const columnItems = allItems.get(columnId) || buildDefaultItems(columnId)
 
-    columnItems.push(item)
+    if (item) {
+      columnItems.push(item);
+    }
 
-    const newItems = allItems.set(columnId, columnItems)
+    const newItems = allItems.set(columnId, columnItems);
 
     yield put({ type: listItemTypes.SUCCESS, items: newItems });
   } catch (error) {
-
     yield put({ type: listItemTypes.FAILURE, error });
   }
 }
 
 export function* removeItemSaga({ columnId, item }) {
   try {
-    const currentItems = yield select(selectors.items)
-    const columnItems = currentItems.get(columnId)
-    const itemIndex = columnItems.indexOf(item)
-    const newItems = columnItems.splice(itemIndex, 1)
+    const allItems = yield select(selectors.items)
+    const columnItems = allItems.get(columnId) || buildDefaultItems(columnId)
+
+    const itemIndex = columnItems.findIndex((element) => element.text == item.text)
+
+    columnItems.splice(itemIndex, 1)
+
+    const newItems = allItems.set(columnId, columnItems);
+
     yield put({ type: listItemTypes.SUCCESS, items: newItems });
   } catch (error) {
     yield put({ type: listItemTypes.FAILURE, error });
@@ -62,7 +87,7 @@ export function* removeItemSaga({ columnId, item }) {
 
 export function* rootSaga() {
   yield [
-    takeEvery(listItemTypes.REQUEST, addItemSaga),
-    takeEvery(listItemTypes.REMOVE, removeItemSaga)
+    takeLatest(listItemTypes.REQUEST, addItemSaga),
+    takeLatest(listItemTypes.REMOVE, removeItemSaga)
   ]
 }

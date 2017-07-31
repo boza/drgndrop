@@ -1,15 +1,26 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { DragSource } from 'react-dnd';
 import { columnTypes } from 'sagas/ColumnSaga';
-
+import { actions } from 'sagas/ItemSaga';
 
 const itemSource = {
   beginDrag(props) {
+    const { item: {id, text}, columnId } = props
     return {
-      id: props.id,
-      index: props.index,
+      id: id,
+      columnId: columnId,
+      text: text
     };
   },
+
+  endDrag(props, monitor, component) {
+    const { columnId, removeItemToColumn } = props
+    const item = monitor.getItem();
+    const dropResult = monitor.getDropResult();
+    removeItemToColumn(item, columnId);
+  }
 }
 
 function collect(connect, monitor) {
@@ -32,12 +43,12 @@ class ListItem extends React.Component {
   }
 
   render() {
-    const { isDragging, connectDragSource } = this.props;
+    const { item, isDragging, connectDragSource } = this.props;
     const { getClassName } = this;
 
     return connectDragSource(
-      <li className={ getClassName(isDragging) }>
-        List Item
+      <li id={item.id} className={ getClassName(isDragging) }>
+        { item.text }
       </li>
     )
   }
@@ -45,8 +56,14 @@ class ListItem extends React.Component {
 
 ListItem.defaultProps = {
   item: React.PropTypes.shape({}),
+  columnId: React.PropTypes.number.isRequired,
   isDragging: React.PropTypes.func.isRequired,
-  connectDragSource: React.PropTypes.func.isRequired
+  connectDragSource: React.PropTypes.func.isRequired,
+  removeItemToColumn: React.PropTypes.func.isRequired
 };
 
-export default DragSource(columnTypes.DRAG, itemSource, collect)(ListItem);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(actions, dispatch);
+}
+
+export default connect(null, mapDispatchToProps)(DragSource(columnTypes.DRAG, itemSource, collect)(ListItem));
