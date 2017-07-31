@@ -10,6 +10,7 @@ This is an example application for Fibeez on react, redux and redux saga. Uses a
 
 * `npm install`
 * `npm start`
+  * If you have this error starting the server `Error watching file for changes: EMFILE` use `brew install watchman` to fix the problem 
 
 ### Contribution guidelines ###
 
